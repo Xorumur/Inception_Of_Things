@@ -23,6 +23,9 @@ NODE_TOKEN=$(cat $TOKEN_FILE)
 
 # Installation de K3s en tant que nœud agent
 echo "Installation de K3s en mode agent..."
-curl -sfL https://get.k3s.io | K3S_URL="https://${SERVER_IP}:6443" K3S_TOKEN="${NODE_TOKEN}" sh -
+# Précision du mode agent de l'internal IP du cluster
+export INSTALL_K3S_EXEC="agent -i 192.168.56.111"
+curl -sfL https://get.k3s.io | K3S_URL="https://${SERVER_IP}:6443" K3S_TOKEN="${NODE_TOKEN}"  sh -
 
+echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 echo "Le nœud de travail K3s a été configuré et rejoint le cluster avec succès."

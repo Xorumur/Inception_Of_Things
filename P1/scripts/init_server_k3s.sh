@@ -12,7 +12,7 @@ sudo apt-get install -y curl
 export K3S_KUBECONFIG_MODE="644"
 
 # Préciser le mode serveur pour l'installation de K3s
-export INSTALL_K3S_EXEC="server"
+export INSTALL_K3S_EXEC="server --node-ip=192.168.56.110"
 
 echo "Installation de K3s..."
 curl -sfL https://get.k3s.io | sh -
@@ -33,4 +33,5 @@ KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
 echo "Copie du fichier kubeconfig dans le dossier partagé..."
 sudo cp $KUBECONFIG /vagrant/k3s.yaml
 
+echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 echo "Installation du serveur K3s terminée avec succès."
