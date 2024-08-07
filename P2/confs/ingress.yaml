@@ -36,3 +36,14 @@ spec:
             name: app3
             port:
               number: 80
+  - host: ""
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app3
+            port:
+              number: 80
+

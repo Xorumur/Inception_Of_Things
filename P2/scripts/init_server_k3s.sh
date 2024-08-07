@@ -15,7 +15,7 @@ export K3S_KUBECONFIG_MODE="644"
 export INSTALL_K3S_EXEC="server --node-ip=192.168.56.110"
 
 echo "Installation de K3s..."
-sudo curl -sfL https://get.k3s.io | sh -
+curl -sfL https://get.k3s.io | sh -
 
 # Attendre que le token soit disponible
 TOKEN="/var/lib/rancher/k3s/server/node-token"
@@ -35,15 +35,20 @@ sudo cp $KUBECONFIG /vagrant/k3s.yaml
 
 echo "alias k='kubectl'" >> /home/vagrant/.bashrc
 
+echo "Application des services ..."
+sudo kubectl apply -f /vagrant/confs/app1.yaml
+sudo kubectl get configmap app1-html -o yaml
+sudo kubectl apply -f /vagrant/confs/app2.yaml
+sudo kubectl get configmap app2-html -o yaml
+sudo kubectl apply -f /vagrant/confs/app3.yaml
+sudo kubectl get configmap app3-html -o yaml
 
-sudo kubectl apply -f /vagrant/confs/app1/app1-deployment.yaml
-sudo kubectl apply -f /vagrant/confs/app2/app2-deployment.yaml
-sudo kubectl apply -f /vagrant/confs/app3/app3-deployment.yaml
-sudo kubectl apply -f /vagrant/confs/services.yaml
+
 sudo kubectl apply -f /vagrant/confs/ingress.yaml
 
 echo "192.168.56.110 app1.com" >> /etc/hosts
 echo "192.168.56.110 app2.com" >> /etc/hosts
 echo "192.168.56.110 app3.com" >> /etc/hosts
+
 
 echo "Installation du serveur K3s terminée avec succès."
