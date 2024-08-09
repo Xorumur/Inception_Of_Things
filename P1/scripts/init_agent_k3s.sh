@@ -3,7 +3,7 @@
 set -e  # Arrête le script en cas d'erreur
 
 echo "Mise à jour des paquets..."
-sudo apt-get update
+sudo apt-get update --fix-missing
 
 echo "Installation des dépendances nécessaires..."
 sudo apt-get install -y curl
