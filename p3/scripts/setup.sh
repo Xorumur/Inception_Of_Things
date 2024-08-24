@@ -1,29 +1,9 @@
 #!/bin/bash
 
-check_pods() {
-  local NAMESPACE=$1
-  kubectl get pods -n $NAMESPACE | grep -v 'Running\|Completed\|NAME' | wc -l
-}
+# Créer un cluster K3d
+k3d cluster create myk3dcluster
 
-# Attendre que tous les pods soient en état 'Running' ou 'Completed'
-wait_for_pods() {
-  local NAMESPACE=$1
-  echo "Attente que tous les pods dans le namespace $NAMESPACE soient en état 'Running' ou 'Completed'..."
-  while [ $(check_pods $NAMESPACE) -ne 0 ]; do
-    echo "Des pods dans le namespace $NAMESPACE sont encore en cours d'initialisation ou en échec. Attente..."
-    sleep 10
-  done
-  echo "Tous les pods dans le namespace $NAMESPACE sont en état 'Running' ou 'Completed'."
-}
-
-
-# Créer un cluster K3d avec les ports mappés
-k3d cluster create myk3dbonuscluster
-
-echo "Installation de Helm"
-curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-echo "Installation de Helm terminée"
-
+# Créer un namespace pour Argo CD
 kubectl create namespace argocd
 
 # Installer Argo CD
@@ -66,38 +46,8 @@ ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o js
 echo $ARGOCD_PASSWORD
 echo "Argo cd interface disponible http://127.0.0.1:8080"
 
-sleep 10
-
-# ArgoCD Authentication
-argocd login --insecure --username admin --password $ARGOCD_PASSWORD --grpc-web 127.0.0.1:8080
-
-argocd app sync wil42
-
 kubectl create namespace dev
 
 kubectl apply -f ../confs/deploy.yaml -n argocd
 
-kubectl create namespace gitlab
-
-echo "Configuration de l'instance gitlab"
-helm repo add gitlab https://charts.gitlab.io/
-helm repo update
-helm upgrade --install gitlab gitlab/gitlab --namespace gitlab -f ../confs/gitlab_conf.yaml
-
-# Fonction pour vérifier l'état des pods
-
-wait_for_pods gitlab
-
-echo -n "Mot de passe GitLab : "
-kubectl get secret gitlab-gitlab-initial-root-password -n gitlab -ojsonpath='{.data.password}' | base64 --decode
-
-
-
-
-sudo fuser -k 8081/tcp
-sudo kubectl port-forward -n gitlab svc/gitlab-webservice-default 8081:8181 > /dev/null 2>&1 &
-
-
-
-
-echo "Setup terminé"
+echo "Setup fini"

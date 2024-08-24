@@ -1,8 +1,0 @@
-global:
-  hosts:
-    https: false
-    domain: mlecherb.com 
-    externalIP: 192.168.56.110
-
-certmanager-issuer :
-  email: math.lecherbonnier@gmail.com
